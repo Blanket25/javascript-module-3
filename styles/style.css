@@ -1,0 +1,21 @@
+body {
+  font-family: sans-serif;
+}
+
+.sidebar {
+  overflow-y: scroll;
+}
+
+.list-items {
+  list-style: none;
+}
+
+.link {
+  text-decoration: none;
+  color: #000;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+}
