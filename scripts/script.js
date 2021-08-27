@@ -1,4 +1,4 @@
-import {getEpisodes, getOneCharacter} from './api.js';
+import {getEpisodes} from './api.js';
 
 const root = document.getElementById('root');
 
@@ -8,6 +8,7 @@ const showTitle = document.createElement('img');
 headerEl.appendChild(showTitle);
 root.appendChild(headerEl);
 showTitle.src = './images/image4.png';
+showTitle.classList.add('img:first-of-type');
 
 //flex container
 const flexDivEl = document.createElement('div');
@@ -19,18 +20,27 @@ const sidebarEl = document.createElement('aside');
 const episodesListEl = document.createElement('ul');
 const nextBtn = document.createElement('button');
 nextBtn.textContent = 'Load episodes';
+sidebarEl.classList.add('sidebar')
 
 sidebarEl.appendChild(episodesListEl);
 sidebarEl.appendChild(nextBtn);
 flexDivEl.appendChild(sidebarEl);
 
-const listOfEpisodes = await getEpisodes();
-const arrOfEpisodes = listOfEpisodes.results;
 
-//this function shows a list of episodes(links) in the side bar
-async function showEpisodes() {
+let nextPage;
 
-    arrOfEpisodes.forEach(episode => {
+async function showEpisodes(pageUrl) {
+    const moreEpisodes = await getEpisodes(pageUrl);
+    const arrOfEpisodes = moreEpisodes.results; 
+    nextPage = moreEpisodes.info.next;
+    return arrOfEpisodes;
+}
+
+let chapterLinks = [];
+
+async function episodesToDom(arr) {
+
+    arr.forEach(episode => {
 
         const episodeEl = document.createElement('li');
         episodeEl.classList.add('list-items')
@@ -42,56 +52,41 @@ async function showEpisodes() {
         chapterLink.classList.add('link');
         chapterLink.textContent = episode.name;
         chapterLink.href = episode.url;
-
-        return chapterLink;
+        chapterLinks.push(chapterLink.href)
     })
 }
 
-showEpisodes();
+const episodesUrl = 'https://rickandmortyapi.com/api/episode';
 
+episodesToDom(await showEpisodes(episodesUrl));
 
 //button functionallity
-nextBtn.addEventListener('click', () => {
-   console.log(listOfEpisodes.info.next)
-   sidebarEl.classList.add('sidebar');
+nextBtn.addEventListener('click', async () => {
+    episodesToDom(await showEpisodes(nextPage))
 })
-
+   
 //main content
 const mainEl = document.createElement('main');
 flexDivEl.appendChild(mainEl);
 
-//create a function that on clicking the episode title it shows
-//you the above info
-
-
-arrOfEpisodes.forEach(episode => {
-        //- Name
+function getEpisodeInfo(arr) {
+arr.forEach(episode => {
+         //- Name
        const nameEl = document.createElement('h1');
        nameEl.textContent = episode.name;
        mainEl.appendChild(nameEl);
+       nameEl.classList.add('subtitle')
 
-       //- Air date
+       //- Air date //- Episode code
        const airDatePEl = document.createElement('p');
-       airDatePEl.textContent = episode.air_date;
+       airDatePEl.textContent = `${episode.air_date} | ${episode.episode}`;
        mainEl.appendChild(airDatePEl);
-
-       //- Episode code
-       const episodeCodePEl = document.createElement('p');
-       episodeCodePEl.textContent = episode.episode;
-       mainEl.appendChild(episodeCodePEl); 
-     })
-       
-async function getCharacters(url) {
-    const character = await getOneCharacter(url);
-    console.log(character)
+    })
 }
-getCharacters(url)
 
-
-
-       const charactersArr = episode.characters;
-       charactersArr.forEach(character => {
-        console.log(character)
+function getCharacterInfo(arr) {
+   
+    arr.forEach(character => {
         // - Character name
         const charNameEl = document.createElement('h3');
         charNameEl.textContent = character.name;
@@ -115,3 +110,9 @@ getCharacters(url)
 
        })
   
+}
+
+
+
+
+   

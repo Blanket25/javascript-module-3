@@ -3,7 +3,7 @@ body {
 }
 
 .sidebar {
-  overflow-y: scroll;
+  padding: 1rem;
 }
 
 .list-items {
@@ -18,4 +18,12 @@ body {
 .flex-container {
   display: flex;
   flex-direction: row;
+}
+
+img:first-of-type {
+  width: 30%;
+}
+
+.subtitle {
+  font-size: 1.5rem;
 }
