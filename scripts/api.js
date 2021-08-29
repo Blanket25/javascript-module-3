@@ -4,4 +4,10 @@ async function getEpisodes(url) {
     return result;
 }
 
-export {getEpisodes};
+async function getCharacters() {
+    const response = await fetch('https://rickandmortyapi.com/api/character');
+    const {results} = await response.json();
+    return results;
+}
+
+export {getEpisodes, getCharacters};
