@@ -1,4 +1,4 @@
-import {getEpisodes, getCharacters} from './api.js';
+import {getEpisodes} from './api.js';
 
 const root = document.getElementById('root');
 
@@ -32,79 +32,86 @@ flexDivEl.appendChild(mainEl);
 mainEl.classList.add('main-container')
 
 
-let nextPage;
+let episodeNumber = 1;
 
-async function showEpisodes(pageUrl) {
-    const episodes = await getEpisodes(pageUrl);
-    const arrOfEpisodes = episodes.results; 
-    nextPage = episodes.info.next;
+function showEpisodesInfo(){
+    
+        const textDiv = document.createElement('div')
+        mainEl.appendChild(textDiv)
 
-    return arrOfEpisodes;
+        let episode = `https://rickandmortyapi.com/api/episode/${episodeNumber}`
+        fetch(episode)
+            .then(response => response.json())
+            .then(episode => {
+                mainEl.textContent = '';
+                //- Name
+                const nameEpisodeH1 = document.createElement('h1');
+                textDiv.appendChild(nameEpisodeH1);
+                nameEpisodeH1.classList.add('subtitle')
+                nameEpisodeH1.textContent = episode.name;
+            
+                //- Air date //- Episode code
+                const episodeInfoP = document.createElement('p');
+                textDiv.appendChild(episodeInfoP);
+                episodeInfoP.textContent = `${episode.air_date} | ${episode.episode}`;
+
+                const charContainerDiv = document.createElement('div')
+                mainEl.appendChild(charContainerDiv)
+                charContainerDiv.classList.add('div-char-flex')
+
+                let CharArr = episode.characters;
+
+                CharArr.forEach(charUrl => {
+                    fetch(charUrl)
+                        .then(response => response.json())
+                        .then(character => {
+                           console.log(character)
+
+                            const charDiv = document.createElement('div');
+                            charContainerDiv.appendChild(charDiv) 
+                            
+                            // - Character image
+                            const charImg = document.createElement('img');
+                            charDiv.appendChild(charImg);
+                            charImg.classList.add('characters-img')
+                            charImg.src = character.image;
+                        
+                            // - Character name
+                            const charNameH3 = document.createElement('h3');
+                            charDiv.appendChild(charNameH3);
+                            charNameH3.textContent = character.name;
+                            
+                            // - Character status // - Character specie
+                            const charStatusP = document.createElement('p');
+                            charDiv.appendChild(charStatusP);               
+                            charStatusP.textContent = `${character.species} | ${character.status}`;
+
+                        })
+                })
+                })
+
+        episodeNumber ++;             
 }
 
-async function episodesToDom(arr) {
+let pageNumber = 1;
 
-    arr.forEach(episode => {
+async function showEpisodes() {
+    const episodes = await getEpisodes(pageNumber);
+    episodes.results.forEach(episode => {
         const episodeListItem = document.createElement('li');
         episodesList.appendChild(episodeListItem)
         episodeListItem.classList.add('list-items')
         episodeListItem.textContent = episode.name;
-        episodeListItem.addEventListener('click', async () => {
 
-            const textDiv = document.createElement('div')
-            mainEl.appendChild(textDiv)
-
-             //- Name
-            const nameEpisodeH1 = document.createElement('h1');
-            nameEpisodeH1.textContent = episode.name;
-            textDiv.appendChild(nameEpisodeH1);
-            nameEpisodeH1.classList.add('subtitle')
-
-            //- Air date //- Episode code
-            const episodeInfoP = document.createElement('p');
-            episodeInfoP.textContent = `${episode.air_date} | ${episode.episode}`;
-            textDiv.appendChild(episodeInfoP);
-
-            const charContainerDiv = document.createElement('div')
-            mainEl.appendChild(charContainerDiv)
-            charContainerDiv.classList.add('div-char-flex')
-
-            const charactersArr = await getCharacters();
-
-            charactersArr.forEach(character => {
-
-                    const charDiv = document.createElement('div');
-                    charContainerDiv.appendChild(charDiv) 
-                    
-                     // - Character image
-                    const charImg = document.createElement('img');
-                    charImg.src = character.image;
-                    charDiv.appendChild(charImg);
-                    charImg.classList.add('characters-img')
-                
-                    // - Character name
-                    const charNameH3 = document.createElement('h3');
-                    charNameH3.textContent = character.name;
-                    charDiv.appendChild(charNameH3);
-                    
-                    // - Character status // - Character specie
-                    const charStatusP = document.createElement('p');
-                    charStatusP.textContent = `${character.species} | ${character.status}`;
-                    charDiv.appendChild(charStatusP);                   
-        
-    })    
-        })
-    })
+        episodeListItem.addEventListener('click', showEpisodesInfo)
+    });
+    
 }
 
-const episodesUrl = 'https://rickandmortyapi.com/api/episode';
+showEpisodes()
 
-episodesToDom(await showEpisodes(episodesUrl));
-
-//button functionallity
-nextBtn.addEventListener('click', async () => {
-    episodesToDom(await showEpisodes(nextPage))
-    sidebarEl.classList.add('scrolling')
+nextBtn.addEventListener('click', () => {
+    pageNumber ++;
+    showEpisodes ()
 })
-   
-   
+
