@@ -36,14 +36,15 @@ let episodeNumber = 1;
 
 function showEpisodesInfo(){
     
-        const textDiv = document.createElement('div')
-        mainEl.appendChild(textDiv)
-
         let episode = `https://rickandmortyapi.com/api/episode/${episodeNumber}`
         fetch(episode)
             .then(response => response.json())
             .then(episode => {
                 mainEl.textContent = '';
+
+                const textDiv = document.createElement('div')
+                mainEl.appendChild(textDiv)
+
                 //- Name
                 const nameEpisodeH1 = document.createElement('h1');
                 textDiv.appendChild(nameEpisodeH1);
@@ -65,8 +66,6 @@ function showEpisodesInfo(){
                     fetch(charUrl)
                         .then(response => response.json())
                         .then(character => {
-                           console.log(character)
-
                             const charDiv = document.createElement('div');
                             charContainerDiv.appendChild(charDiv) 
                             
@@ -113,5 +112,6 @@ showEpisodes()
 nextBtn.addEventListener('click', () => {
     pageNumber ++;
     showEpisodes ()
+    sidebarEl.classList.add('scrolling')
 })
 
