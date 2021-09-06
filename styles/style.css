@@ -9,6 +9,7 @@ li {
 
 ul {
   padding-left: 0.5rem;
+  width: 10rem;
 }
 
 li:hover {
@@ -35,5 +36,6 @@ button:hover {
 }
 
 #flex-container {
-  flex-direction: row;
+  display: flex;
+  gap: 1.5rem;
 }
